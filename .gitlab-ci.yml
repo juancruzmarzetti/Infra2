@@ -9,13 +9,19 @@ stages:
   - destroy
 
 init:
-  extends: .terraform:init
+  stage: init
+  script:
+    - terraform init
 
 validate:
-  extends: .terraform:validate
+  stage: validate
+  script:
+    - terraform validate
 
 build:
-  extends: .terraform:build
+  stage: build
+  script:
+    - terraform plan
   artifacts:
     paths:
       - ${TF_ROOT}/plan.cache
@@ -23,12 +29,16 @@ build:
       terraform: ${TF_ROOT}/plan.json
 
 deploy:
-  extends: .terraform:deploy
+  stage: deploy
+  script:
+    - terraform apply
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $TF_AUTO_DEPLOY == "true"
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: manual
 
 destroy:
-  extends: .terraform:destroy
-    when: manual
+  stage: destroy
+  script:
+    - terraform destroy
+  when: manual
