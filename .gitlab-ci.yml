@@ -2,9 +2,14 @@ include:
   - template: Terraform/Base.latest.gitlab-ci.yml
 
 stages:
+  - init
   - validate
   - build
   - deploy
+  - destroy
+
+init:
+  extends: .terraform:init
 
 validate:
   extends: .terraform:validate
@@ -23,3 +28,7 @@ deploy:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $TF_AUTO_DEPLOY == "true"
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: manual
+
+destroy:
+  extends: .terraform:destroy
+    when: manual

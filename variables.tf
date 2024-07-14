@@ -1,10 +1,3 @@
-# ==================================================================
-# Proposito:    declaramos todas las variables que vamos a usar
-# Autor:        DH
-# Fecha:        30.07.21
-# Version:      1.0
-# ==================================================================
-
 variable "aws_region_id" {
     description = "la region"
     type        = string
@@ -27,4 +20,4 @@ variable "private_subnets" {
     type        = string
     default = "10.0.0.192/26"
 }
-# ==================================================================
+
