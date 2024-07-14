@@ -17,6 +17,8 @@ validate:
   stage: validate
   script:
     - terraform validate
+  dependencies:
+    - init
 
 build:
   stage: build
@@ -27,6 +29,8 @@ build:
       - ${TF_ROOT}/plan.cache
     reports:
       terraform: ${TF_ROOT}/plan.json
+  dependencies:
+  - init
 
 deploy:
   stage: deploy
@@ -41,4 +45,5 @@ destroy:
   stage: destroy
   script:
     - terraform destroy
+  resource_group: ${TF_STATE_NAME}
   when: manual
