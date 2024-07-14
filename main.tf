@@ -9,7 +9,7 @@
 # ==================================================================
 # Creamos nuestro VPC
 resource "aws_vpc" "Main" {                # usamos el bloque "resource", el "provider element" y una "etiqueta"
-  cidr_block       = var.main_vpcz_cidr     # le pasamos por variable el CIDR block que quiero que use
+  cidr_block       = var.main_vpc_cidr     # le pasamos por variable el CIDR block que quiero que use
   instance_tenancy = "default"
   tags = {
   Name = "My_VPC"
