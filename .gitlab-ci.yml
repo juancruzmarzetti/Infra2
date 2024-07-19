@@ -1,49 +1,34 @@
-include:
-  - template: Terraform/Base.latest.gitlab-ci.yml
-
 stages:
-  - init
-  - validate
-  - build
   - deploy
   - destroy
 
-init:
-  stage: init
-  script:
-    - terraform init
-
-validate:
-  stage: validate
-  script:
-    - terraform validate
-  dependencies:
-    - init
-
-build:
-  stage: build
-  script:
-    - terraform plan
-  artifacts:
-    paths:
-      - ${TF_ROOT}/plan.cache
-    reports:
-      terraform: ${TF_ROOT}/plan.json
-  dependencies:
-  - init
+variables:
+  TF_STATE_NAME: default
+  TF_IMAGE: "$CI_TEMPLATE_REGISTRY_HOST/gitlab-org/terraform-images/releases/1.4:v1.0.0"
+  SECURE_FILES_DOWNLOAD_PATH: "./"
 
 deploy:
   stage: deploy
+  image: ${TF_IMAGE}
+  before_script:
+    - curl -s https://gitlab.com/gitlab-org/incubation-engineering/mobile-devops/download-secure-files/-/raw/main/installer | sh
   script:
-    - terraform apply
-  rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $TF_AUTO_DEPLOY == "true"
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      when: manual
-
+    - gitlab-terraform init
+    - gitlab-terraform validate
+    - gitlab-terraform plan
+    - gitlab-terraform plan-json
+    - gitlab-terraform apply
+  resource_group: ${TF_STATE_NAME}
+  cache:
+    untracked: true
+    paths:
+      - /
 destroy:
   stage: destroy
-  script:
-    - terraform destroy
-  resource_group: ${TF_STATE_NAME}
+  image: ${TF_IMAGE}
   when: manual
+  before_script:
+    - curl -s https://gitlab.com/gitlab-org/incubation-engineering/mobile-devops/download-secure-files/-/raw/main/installer | sh
+  script:
+    - gitlab-terraform destroy
+  resource_group: ${TF_STATE_NAME}
